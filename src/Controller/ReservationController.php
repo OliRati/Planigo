@@ -23,35 +23,67 @@ final class ReservationController extends AbstractController
         ]);
     }
 
-    #[Route('/error', name: 'app_reservation_error', methods: ['GET'])]
-    public function error(ReservationRepository $reservationRepository): Response
-    {
-        return $this->render('reservation/error.html.twig');
-    }
-
     #[Route('/new', name: 'app_reservation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ReservationRepository $reservationRepository): Response
     {
+        $error = '';
         $reservation = new Reservation();
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $reservation->setCreatedAt(new DateTimeImmutable());
+            $currentDate = new DateTimeImmutable();
+            $reservation->setCreatedAt($currentDate);
 
-            if ($reservationRepository->isAvailable($reservation->getStartAt(), $reservation->getEndAt())) {
+            // Check date consistency
+
+            // Date de début dans le futur
+            if ($reservation->getStartAt()->getTimestamp() - $currentDate->getTimestamp() < 0)
+                $error = 'La date de début doit être dans le futur';
+
+            // Date de fin après la date de Début
+            if (
+                empty($error)
+                && $reservation->getEndAt()->getTimestamp() - $reservation->getStartAt()->getTimestamp() < 0
+            )
+                $error = 'La date de fin doit succeder à la date de début';
+
+            // Durée du créneau ne peut dépasser 4 heures soit 14400 secondes
+            if (
+                empty($error)
+                && $reservation->getEndAt()->getTimestamp() - $reservation->getStartAt()->getTimestamp() > 14400
+            ) {
+                $error = "La durée du créneau ne peut dépasser 4 heures";
+            }
+
+            // Disponibilité du créneau horaire
+            if (
+                empty($error)
+                && !$reservationRepository->isAvailable($reservation->getStartAt(), $reservation->getEndAt())
+            ) {
+                $error = 'Le créneau horaire n\'est pas disponible';
+            }
+
+            if (empty($error)) {
                 $entityManager->persist($reservation);
                 $entityManager->flush();
 
                 return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_reservation_error', [], Response::HTTP_SEE_OTHER);
+            if (!empty($error)) {
+                return $this->render('reservation/new.html.twig', [
+                    'reservation' => $reservation,
+                    'form' => $form,
+                    'error' => $error
+                ], new Response('', 422));
+            }
         }
 
         return $this->render('reservation/new.html.twig', [
             'reservation' => $reservation,
-            'form' => $form
+            'form' => $form,
+            'error' => ''
         ]);
     }
 
