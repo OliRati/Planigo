@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Reservation;
 use App\Form\ReservationType;
 use App\Repository\ReservationRepository;
+use App\Service\Agenda;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,28 +34,12 @@ final class ReservationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $currentDate = new DateTimeImmutable();
+
             $reservation->setCreatedAt($currentDate);
 
             // Check date consistency
-
-            // Date de début dans le futur
-            if ($reservation->getStartAt()->getTimestamp() - $currentDate->getTimestamp() < 0)
-                $error = 'La date de début doit être dans le futur';
-
-            // Date de fin après la date de Début
-            if (
-                empty($error)
-                && $reservation->getEndAt()->getTimestamp() - $reservation->getStartAt()->getTimestamp() < 0
-            )
-                $error = 'La date de fin doit succeder à la date de début';
-
-            // Durée du créneau ne peut dépasser 4 heures soit 14400 secondes
-            if (
-                empty($error)
-                && $reservation->getEndAt()->getTimestamp() - $reservation->getStartAt()->getTimestamp() > 14400
-            ) {
-                $error = "La durée du créneau ne peut dépasser 4 heures";
-            }
+            $agenda = new Agenda();
+            $error = $agenda->checkDateValidity($currentDate, $reservation->getStartAt(), $reservation->getEndAt());
 
             // Disponibilité du créneau horaire
             if (
