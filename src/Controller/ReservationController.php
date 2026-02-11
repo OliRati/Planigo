@@ -81,12 +81,43 @@ final class ReservationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_reservation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Reservation $reservation, EntityManagerInterface $entityManager, ReservationRepository $reservationRepository): Response
     {
+        $error = '';
+
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $currentDate = new DateTimeImmutable();
+
+            // Check date consistency
+            $agenda = new Agenda();
+            $error = $agenda->checkDateValidity($currentDate, $reservation->getStartAt(), $reservation->getEndAt());
+
+            // Disponibilité du créneau horaire
+            if (
+                empty($error)
+                && !$reservationRepository->isAvailable($reservation->getStartAt(), $reservation->getEndAt())
+            ) {
+                $error = 'Le créneau horaire n\'est pas disponible';
+            }
+
+            if (empty($error)) {
+                $entityManager->persist($reservation);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            if (!empty($error)) {
+                return $this->render('reservation/edit.html.twig', [
+                    'reservation' => $reservation,
+                    'form' => $form,
+                    'error' => $error
+                ], new Response('', 422));
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
@@ -95,6 +126,7 @@ final class ReservationController extends AbstractController
         return $this->render('reservation/edit.html.twig', [
             'reservation' => $reservation,
             'form' => $form,
+            'error' => ''
         ]);
     }
 
