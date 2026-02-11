@@ -2,7 +2,7 @@
 #### Download the project
 - Clone this repository
 - go to repository directory
-- To restore all project dependencies use the following commannd
+- To restore all project dependencies use the following command
 ```bash
 composer update
 ```
