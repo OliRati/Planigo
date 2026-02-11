@@ -37,6 +37,10 @@ final class ReservationController extends AbstractController
 
             $reservation->setCreatedAt($currentDate);
 
+            $user = $this->getUser();
+
+            $reservation->setCustomerName($user->getNom() . ' ' . $user->getPrenom());
+
             // Check date consistency
             $agenda = new Agenda();
             $error = $agenda->checkDateValidity($currentDate, $reservation->getStartAt(), $reservation->getEndAt());
