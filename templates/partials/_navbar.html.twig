@@ -7,12 +7,13 @@
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item">
-					<a class="nav-link active" href="{{ path('app_planning_all') }}">Planning
+					<a class="nav-link active" href="{{ path('app_planning_all') }}">
+						Planning
 						<span class="visually-hidden">(current)</span>
 					</a>
 				</li>
 				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Utilidateur</a>
+					<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Utilisateur</a>
 					<div class="dropdown-menu">
 						{% if is_granted("IS_AUTHENTICATED_FULLY") %}
 							<a class="dropdown-item" href="#">Profile</a>

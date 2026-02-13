@@ -44,12 +44,15 @@ final class PlanningController extends AbstractController
         ]);
     }
 
+    #[isGranted('ROLE_USER')]
     #[Route('/admin/planning', name: 'app_planning_all')]
     public function index(ReservationRepository $reservationRepository): Response
     {
-        $reservations = $reservationRepository->findByDay(new DateTimeImmutable());
+        $today = new DateTimeImmutable();
+        $reservations = $reservationRepository->findByDay($today);
 
         return $this->render('planning/index.html.twig', [
+            'date'=> $today,
             'service' => 'de tous les services',
             'reservations' => $reservations
         ]);

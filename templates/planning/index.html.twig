@@ -4,42 +4,49 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Planning journalier de toutes les réservations</h1>
+	<div class="container" style="max-width: 80rem;">
 
-	<table class="table table-hover">
-		<thead>
-			<tr>
-				<th scope="col">Id</th>
-                <th scope="col">Nom du client</th>
-				<th scope="col">Service</th>
-				<th scope="col">Début réservation</th>
-				<th scope="col">Fin réservation</th>
-                <th scope="col">Date de création</th>
-				<th scope="col">actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for reservation in reservations %}
-				<tr class="table-active">
-					<th scope="row">{{ reservation.id }}</th>
-                    <td>{{ reservation.customerName }}</td>
-					<td>{{ reservation.service.nom }}</td>
-					<td>{{ reservation.startAt ? reservation.startAt|date('Y-m-d H:i:s') : '' }}</td>
-					<td>{{ reservation.endAt ? reservation.endAt|date('Y-m-d H:i:s') : '' }}</td>
-					<td>{{ reservation.createdAt ? reservation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-					<td>
-						<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">Afficher</a>
-						<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Editer</a>
-						<a class="btn btn-warning btn-sm" href="{{ path('app_reservation_delete', {'id': reservation.id}) }}">Supprimer</a>
-					</td>
-				</tr>
-			{% else %}
-				<tr>
-					<td colspan="6">Aucune réservation</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+		<h1>Planning journalier du
+			{{ date|date('d-m-Y') }}</h1>
+		<h2>De tous les services</h2>
 
-	<a style="btn btn-primary" href="{{ path('app_reservation_new')}}"></a>
+		<table class="table table-hover">
+			<thead>
+				<tr class="table-primary">
+					<th scope="col">Id</th>
+					<th scope="col">Nom du client</th>
+					<th scope="col">Service</th>
+					<th scope="col">Date</th>
+					<th scope="col">Plage horaires</th>
+					<th scope="col">Date de création</th>
+					<th scope="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for reservation in reservations %}
+					<tr class="table-dark">
+						<th scope="row">{{ reservation.id }}</th>
+						<td>{{ reservation.customerName }}</td>
+						<td>{{ reservation.service.nom }}</td>
+						<td>{{ reservation.startAt|date('d-m-Y') }}</td>
+						<td>{{ reservation.startAt|date('H:i') }}
+							-
+							{{ reservation.endAt|date('H:i') }}</td>
+						<td>{{ reservation.createdAt ? reservation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+						<td>
+							<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">Afficher</a>
+							<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Editer</a>
+							<a class="btn btn-warning btn-sm" href="{{ path('app_reservation_delete', {'id': reservation.id}) }}">Supprimer</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6">Aucune réservation</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<a style="btn btn-primary" href="{{ path('app_reservation_new')}}"></a>
+	</div>
 {% endblock %}

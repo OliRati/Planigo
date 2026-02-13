@@ -11,7 +11,7 @@
 
 		<table class="table table-hover">
 			<thead>
-				<tr>
+				<tr class="table-primary">
 					<th scope="col">Id</th>
 					<th scope="col">Service</th>
 					<th scope="col">Début réservation</th>
@@ -21,7 +21,7 @@
 			</thead>
 			<tbody>
 				{% for reservation in reservations %}
-					<tr class="table-active">
+					<tr class="table-dark">
 						<th scope="row">{{ reservation.id }}</th>
 						<td>{{ reservation.service.nom }}</td>
 						<td>{{ reservation.startAt ? reservation.startAt|date('Y-m-d H:i:s') : '' }}</td>
