@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Reservation;
+use App\Entity\Service;
 use App\Repository\ReservationRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +24,7 @@ final class PlaningController extends AbstractController
         ]);
     }
 
-    #[Route(path: "/planing/{service}", name: 'app_planing')]
+    #[Route(path: '/planing/{service}', name: 'app_planing')]
     public function plannings(ReservationRepository $reservationRepository): Response
     {
         $service = "du Spa";
@@ -34,5 +35,40 @@ final class PlaningController extends AbstractController
             "service" => $service,
             'reservations' => $reservations
         ]);
+    }
+
+    #[Route(path: '/admin/setup', name: 'app_planing_setup')]
+    public function setup(EntityManagerInterface $em): Response
+    {
+        $defaults = [
+            [
+                'nom' => 'Spa',
+                'description' => 'Profitez d’un moment de détente absolue avec notre service SPA exclusif, conçu pour votre bien-être et relaxation totale.'
+            ],
+            [
+                'nom' => 'Massage',
+                'description' => 'Offrez-vous un massage relaxant aux huiles essentielles, idéal pour relâcher les tensions et revitaliser profondément votre corps.'
+            ],
+            [
+                'nom' => 'Salle de sport',
+                'description' => 'Accédez à notre salle de sport moderne et entièrement équipée pour entretenir votre forme et booster votre énergie quotidienne.'
+            ],
+            [
+                'nom' => 'Espace détente',
+                'description' => 'Profitez d’un espace de détente privé et raffiné, idéal pour vous ressourcer en toute tranquillité et intimité absolue.'
+            ]
+        ];
+
+        foreach ($defaults as $default) {
+            $service = new Service();
+            $service->setNom('' . $default['nom']);
+            $service->setDescription($default['description']);
+
+            $em->persist($service);
+        }
+
+        $em->flush();
+
+        return $this->redirectToRoute('app_home');
     }
 }

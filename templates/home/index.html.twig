@@ -10,52 +10,33 @@
 
     <div class="container-fluid row gap-4">
 
+        {% for service in services %}
         <div class="card border-primary mb-3" style="max-width: 20rem;">
             <div class="card-header">
-                <h4 class="card-title">Spa</h4>
+                <h4 class="card-title">{{ service.nom }}</h4>
             </div>
             <div class="card-body">
                 <p class="card-text">
-                    Profitez d’un moment de détente absolue avec notre service SPA exclusif, conçu pour votre bien-être
-                    et
-                    relaxation totale.</p>
-                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '1'}) }}">Voir les disponibilités</a>
+                    {{ service.description }}
+                </p>
+                <a class="btn btn-primary" href="{{ path('app_planing', {'service': service.id }) }}">Voir les
+                    disponibilités</a>
             </div>
         </div>
-
+        {% else %}
         <div class="card border-primary mb-3" style="max-width: 20rem;">
             <div class="card-header">
-                <h4 class="card-title">Massage</h4>
+                <h4 class="card-title">Erreur du Système</h4>
             </div>
             <div class="card-body">
-                <p class="card-text">Offrez-vous un massage relaxant aux huiles essentielles, idéal pour relâcher les
-                    tensions et revitaliser profondément votre corps.</p>
-                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '2'}) }}">Voir les disponibilités</a>
+                <p class="card-text">
+                    Votre système ne contient aucun service. Veuillez en créer. Utilisez le bouton suivant pour
+                    instancier des services par défaut.
+                </p>
+                <a class="btn btn-primary" href="{{ path('app_planing_setup') }}">Réinitialiser</a>
             </div>
         </div>
-
-        <div class="card border-primary mb-3" style="max-width: 20rem;">
-            <div class="card-header">
-                <h4 class="card-title">Salle de sport</h4>
-            </div>
-            <div class="card-body">
-                Accédez à notre salle de sport moderne et entièrement équipée pour entretenir votre forme et booster
-                votre
-                énergie quotidienne.</p>
-                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '3'}) }}">Voir les disponibilités</a>
-            </div>
-        </div>
-
-        <div class="card border-primary mb-3" style="max-width: 20rem;">
-            <div class="card-header">
-                <h4 class="card-title">Espace détente</h4>
-            </div>
-            <div class="card-body">
-                Profitez d’un espace de détente privé et raffiné, idéal pour vous ressourcer en toute tranquillité et
-                intimité absolue.</p>
-                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '1'}) }}">Voir les disponibilités</a>
-            </div>
-        </div>
+        {% endfor %}
 
     </div>
 </div>
