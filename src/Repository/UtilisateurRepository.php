@@ -37,16 +37,14 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
      * Used to know if an Admin is defines
      * @return bool
      */
-    public function haveAdmin()
+    public function haveAdmin(): bool
     {
-        $admin = $this->createQueryBuilder('u')
-            ->where('JSON_CONTAINS(u.roles, :role) = 1')
-            ->setParameter('role', '"ROLE_ADMIN"')
-            ->getQuery()
-            ->getOneOrNullResult();
+        $users = $this->findAll();
 
-        if ($admin) {
-            return true;
+        foreach ($users as $user) {
+            if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                return true;
+            }
         }
 
         return false;

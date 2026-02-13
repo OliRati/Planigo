@@ -44,7 +44,7 @@ final class PlanningController extends AbstractController
         ]);
     }
 
-    #[isGranted('ROLE_USER')]
+    #[isGranted('ROLE_ADMIN')]
     #[Route('/admin/planning', name: 'app_planning_all')]
     public function index(ReservationRepository $reservationRepository): Response
     {

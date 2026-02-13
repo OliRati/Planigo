@@ -6,10 +6,13 @@
 {% block body %}
 	<div class="container" style="max-width: 80rem;">
 
-		<h1>Enregistrez-vous</h1>
+		<h1 class="mt-3">Enregistrez-vous</h1>
 
-        <p class"text-warning">{{ message }}</p>
-        
+		{% if noAdmin %}
+			<p class="lead text-warning"><span class="text-danger">Attention</span> : Planigo necessite d'être initialisé avec au moins un administrateur.<br>
+            Pour cela le premier compte crée sera l'administrateur du système.
+			</p>
+		{% endif %}
 		{{ form_errors(registrationForm) }}
 
 		{{ form_start(registrationForm) }}

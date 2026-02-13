@@ -6,19 +6,32 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav me-auto">
+				{#
 				<li class="nav-item">
 					<a class="nav-link active" href="{{ path('app_planning_all') }}">
 						Planning
 						<span class="visually-hidden">(current)</span>
 					</a>
 				</li>
+				#}
 				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Utilisateur</a>
+					<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+						{% if is_granted("ROLE_ADMIN") %}
+							Administrateur
+						{% else %}
+							Utilisateur
+						{% endif %}
+					</a>
 					<div class="dropdown-menu">
 						{% if is_granted("IS_AUTHENTICATED_FULLY") %}
-							<a class="dropdown-item" href="#">Profile</a>
-							<a class="dropdown-item" href="{{ path('app_reservation_user') }}">Mes réservations</a>
-							<a class="dropdown-item" href="{{ path('app_planning') }}">Mon Agenda</a>
+							{% if is_granted("ROLE_ADMIN") %}
+									<a class="dropdown-item" href="{{ path('app_reservation_index') }}">Réservations</a>
+									<a class="dropdown-item" href="{{ path('app_planning_all') }}">Agenda</a>
+								{% else %}
+									<a class="dropdown-item" href="#">Profile</a>
+									<a class="dropdown-item" href="{{ path('app_reservation_user') }}">Mes réservations</a>
+									<a class="dropdown-item" href="{{ path('app_planning') }}">Mon Agenda</a>
+							{% endif %}
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
 						{% else %}

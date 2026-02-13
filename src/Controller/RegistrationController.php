@@ -18,7 +18,7 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager, UtilisateurRepository $utilisateurRepository): Response
     {
-        $haveAdmin = true; // $utilisateurRepository->haveAdmin();
+        $haveAdmin = $utilisateurRepository->haveAdmin();
 
         $user = new Utilisateur();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -31,6 +31,11 @@ class RegistrationController extends AbstractController
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
+            if (!$haveAdmin)
+                $user->setRoles(["ROLE_ADMIN"]);
+            else
+                $user->setRoles(['ROLE_USER']);
+
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -39,14 +44,8 @@ class RegistrationController extends AbstractController
             return $security->login($user, 'form_login', 'main');
         }
 
-        $message = '';
-
-        if (!$haveAdmin) {
-            $message = 'Attention : Planigo necessite d\'être initialisé avec au moins un administrateur';
-        }
-
         return $this->render('registration/register.html.twig', [
-            'message' => $message,
+            'noAdmin' => !$haveAdmin,
             'registrationForm' => $form,
         ]);
     }
