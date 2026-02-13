@@ -6,12 +6,16 @@
 {% block body %}
 	<div class="container" style="max-width: 80rem;">
 
-		<h1 class="mt-3">Create new Reservation</h1>
+		<h1 class="mt-3">Ajouter une réservation</h1>
 
 		<div class="text-warning">{{ error }}</div>
 
 		{{ include('reservation/_form.html.twig') }}
 
-		<a class="btn btn-primary my-3" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		{% if is_granted('ROLE_ADMIN') %}
+			<a class="btn btn-primary my-3" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		{% else %}
+			<a class="btn btn-primary my-3" href="{{ path('app_planning') }}">Retour à la liste</a>
+		{% endif %}
 	</div>
 {% endblock %}

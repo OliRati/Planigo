@@ -27,6 +27,7 @@
 							{% if is_granted("ROLE_ADMIN") %}
 									<a class="dropdown-item" href="{{ path('app_reservation_index') }}">Réservations</a>
 									<a class="dropdown-item" href="{{ path('app_planning_all') }}">Agenda</a>
+									<a class="dropdown-item" href="#">Utilisateurs</a>
 								{% else %}
 									<a class="dropdown-item" href="#">Profile</a>
 									<a class="dropdown-item" href="{{ path('app_reservation_user') }}">Mes réservations</a>

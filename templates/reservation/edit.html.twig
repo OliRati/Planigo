@@ -11,7 +11,11 @@
 		<div class="text-warning">{{ error }}</div>
 		{{ include('reservation/_form.html.twig', {'button_label': 'Modifier'}) }}
 
-		<a class="btn btn-primary my-3" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		{% if is_granted('ROLE_ADMIN') %}
+			<a class="btn btn-primary my-3" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		{% else %}
+			<a class="btn btn-primary my-3" href="{{ path('app_planning') }}">Retour à la liste</a>
+		{% endif %}
 
 		{{ include('reservation/_delete_form.html.twig') }}
 	</div>

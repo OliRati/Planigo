@@ -37,7 +37,11 @@
 			</tbody>
 		</table>
 
-		<a class="btn btn-primary" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		{% if is_granted('ROLE_ADMIN') %}
+			<a class="btn btn-primary my-3" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		{% else %}
+			<a class="btn btn-primary my-3" href="{{ path('app_planning') }}">Retour à la liste</a>
+		{% endif %}
 
 		<a class="btn btn-secondary my-3" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Modifier</a>
 

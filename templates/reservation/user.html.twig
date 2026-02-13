@@ -29,7 +29,7 @@
 						<td>
 							<a class="btn btn-primary btn-sm me-2" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">Afficher</a>
 							<a class="btn btn-primary btn-sm me-2" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Editer</a>
-							<a class="btn btn-warning btn-sm" href="{{ path('app_reservation_delete', {'id': reservation.id}) }}">Supprimer</a>
+							{% include "reservation/_delete_form_sm.html.twig" %}
 						</td>
 					</tr>
 				{% else %}

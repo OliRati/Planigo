@@ -6,31 +6,37 @@
 {% block body %}
 	<div class="container" style="max-width: 80rem;">
 
-		<h1>Liste des réservations</h1>
+		<h1 class="my-3">Liste des réservations</h1>
 
 		<table class="table table-hover">
 			<thead>
-				<tr>
+				<tr class="table-primary">
 					<th scope="col">Id</th>
 					<th scope="col">Nom du client</th>
-					<th scope="col">Début réservation</th>
-					<th scope="col">Fin réservation</th>
+					<th scope="col">Service</th>
+					<th scope="col">Date</th>
+					<th scope="col">Plage horaire</th>
 					<th scope="col">Création</th>
 					<th scope="col">actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for reservation in reservations %}
-					<tr class="table-active">
+					<tr class="table-dark">
 						<th scope="row">{{ reservation.id }}</th>
 						<td>{{ reservation.customerName }}</td>
-						<td>{{ reservation.startAt ? reservation.startAt|date('Y-m-d H:i:s') : '' }}</td>
-						<td>{{ reservation.endAt ? reservation.endAt|date('Y-m-d H:i:s') : '' }}</td>
+						<td>{{ reservation.service.nom }}</td>
+						<td>{{ reservation.startAt|date('d-m-Y') }}</td>
+						<td>
+							{{ reservation.startAt|date('H:i') }}
+							-
+							{{ reservation.endAt|date('H:i') }}
+						</td>
 						<td>{{ reservation.createdAt ? reservation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
 						<td>
-							<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">Afficher</a>
-							<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Editer</a>
-							<a class="btn btn-warning btn-sm" href="{{ path('app_reservation_delete', {'id': reservation.id}) }}">Supprimer</a>
+							<a class="btn btn-primary btn-sm me-2" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">Afficher</a>
+							<a class="btn btn-primary btn-sm me-2" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Editer</a>
+							{% include "reservation/_delete_form_sm.html.twig" %}
 						</td>
 					</tr>
 				{% else %}
@@ -42,6 +48,6 @@
 		</table>
 
 		<a class="btn btn-primary" href="{{ path('app_reservation_new') }}">Ajouter réservation</a>
-        
+
 	</div>
 {% endblock %}
