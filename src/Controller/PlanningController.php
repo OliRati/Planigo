@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Service;
+use App\Service\Agenda;
 use App\Repository\ReservationRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,9 +18,11 @@ final class PlanningController extends AbstractController
     #[Route('/planning', name: 'app_planning')]
     public function userIndex(ReservationRepository $reservationRepository): Response
     {
-        $reservations = $reservationRepository->findByUserByDay($this->getUser(), new DateTimeImmutable());
-
+        $today = new DateTimeImmutable();
+        $reservations = $reservationRepository->findByUserByDay($this->getUser(), $today);
+        
         return $this->render('planning/user.html.twig', [
+            'date' => $today,
             'reservations' => $reservations
         ]);
     }
@@ -27,11 +30,17 @@ final class PlanningController extends AbstractController
     #[Route(path: '/planning/{service}', name: 'app_planning_service')]
     public function planningsByService(ReservationRepository $reservationRepository, Service $service): Response
     {
-        $reservations = $reservationRepository->findByServiceByDay( $service->getId(), new DateTimeImmutable());
+        $today = new DateTimeImmutable();
+        $reservations = $reservationRepository->findByServiceByDay( $service->getId(), $today);
+
+        $agenda = new Agenda();
+        $freetabs = $agenda->freeSpace($reservations);
 
         return $this->render('planning/service.html.twig', [
+            'date' => $today,
             "service" => $service,
-            'reservations' => $reservations
+            'reservations' => $reservations,
+            'freetabs' => $freetabs
         ]);
     }
 

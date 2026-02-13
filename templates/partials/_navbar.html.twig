@@ -16,7 +16,8 @@
 					<div class="dropdown-menu">
 						{% if is_granted("IS_AUTHENTICATED_FULLY") %}
 							<a class="dropdown-item" href="#">Profile</a>
-							<a class="dropdown-item" href="{{ path('app_planning') }}">Mes réservations</a>
+							<a class="dropdown-item" href="{{ path('app_reservation_user') }}">Mes réservations</a>
+							<a class="dropdown-item" href="{{ path('app_planning') }}">Mon Agenda</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
 						{% else %}

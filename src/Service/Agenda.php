@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Reservation;
 use DateTimeImmutable;
 
 class Agenda
@@ -31,10 +32,10 @@ class Agenda
         $timestampFermeture = (clone $start)->setTime((int) $h, (int) $m, 0)->getTimestamp();
 
         [$h, $m] = explode(':', Agenda::$reservationMaximale);
-        $maxTimestampEnd = $timestampStart + (int)$h*60*60 + (int)$m*60;
+        $maxTimestampEnd = $timestampStart + (int) $h * 60 * 60 + (int) $m * 60;
 
         [$h, $m] = explode(':', Agenda::$reservationMinimale);
-        $minTimestampEnd = $timestampStart + (int)$h*60*60 + (int)$m*60;
+        $minTimestampEnd = $timestampStart + (int) $h * 60 * 60 + (int) $m * 60;
 
         // Date de début dans le futur
         if ($timestampStart - $timestampCurrent < 0)
@@ -61,5 +62,30 @@ class Agenda
             return 'Les réservations ne peuvent dépasser la fermeture à ' . Agenda::$heureFermeture . ' heures';
 
         return false;
+    }
+
+    public function freeSpace(array $reservations)
+    {
+        $startTime = $this::$heureOuverture;
+        $endTime = $this::$heureFermeture;
+
+        $spaces = [];
+
+        foreach ($reservations as $reservation) {
+            $spaces[] = [
+                'start' => $startTime,
+                'end' => $reservation->getStartAt()->format('H:i'),
+            ];
+            $startTime = $reservation->getEndAt()->format('H:i');
+        }
+
+        if ($startTime != $endTime) {
+            $spaces[] = [
+                'start' => $startTime,
+                'end' => $this::$heureFermeture
+            ];
+        }
+
+        return $spaces;
     }
 }

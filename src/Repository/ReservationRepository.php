@@ -26,8 +26,19 @@ class ReservationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->andWhere('r.startAt < :end')
             ->andWhere('r.endAt >= :start')
+            ->orderBy('r.startAt', 'ASC')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllByUser($idUtilisateur): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.utilisateur = :utilisateur')
+            ->orderBy('r.startAt', 'ASC')
+            ->setParameter('utilisateur', $idUtilisateur)
             ->getQuery()
             ->getResult();
     }
@@ -41,6 +52,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->andWhere('r.startAt < :end')
             ->andWhere('r.endAt >= :start')
             ->andWhere('r.utilisateur = :utilisateur')
+            ->orderBy('r.startAt', 'ASC')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
             ->setParameter('utilisateur', $user)
@@ -50,12 +62,13 @@ class ReservationRepository extends ServiceEntityRepository
 
     public function findByServiceByDay($idService, DateTimeInterface $date): array
     {
-        $start = (clone $date)->setTime(0,0,0);
-        $end = (clone $date)->setTime(23.59,59);
+        $start = (clone $date)->setTime(0, 0, 0);
+        $end = (clone $date)->setTime(23.59, 59);
         return $this->createQueryBuilder('r')
             ->andWhere('r.startAt < :end')
             ->andWhere('r.endAt >= :start')
             ->andWhere('r.service = :idservice')
+            ->orderBy('r.startAt', 'ASC')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
             ->setParameter(':idservice', $idService)

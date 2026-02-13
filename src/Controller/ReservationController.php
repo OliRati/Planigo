@@ -12,10 +12,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/reservation')]
 final class ReservationController extends AbstractController
 {
+    #[isGranted('ROLE_USER')]
+    #[Route(name: 'app_reservation_user', methods: ['GET'])]
+    public function MesReservations(ReservationRepository $reservationRepository): Response
+    {
+        return $this->render('reservation/user.html.twig', [
+            'reservations' => $reservationRepository->findAllByUser($this->getUser())
+        ]);
+    }
+
+
     #[Route(name: 'app_reservation_index', methods: ['GET'])]
     public function index(ReservationRepository $reservationRepository): Response
     {
