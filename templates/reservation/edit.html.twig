@@ -6,12 +6,12 @@
 {% block body %}
 	<div class="container" style="max-width: 80rem;">
 
-		<h1>Editer la réservation</h1>
+		<h1 class="mt-3">Editer la réservation</h1>
 
 		<div class="text-warning">{{ error }}</div>
 		{{ include('reservation/_form.html.twig', {'button_label': 'Modifier'}) }}
 
-		<a class="btn btn-primary" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
+		<a class="btn btn-primary my-3" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
 
 		{{ include('reservation/_delete_form.html.twig') }}
 	</div>

@@ -16,9 +16,11 @@ class ReservationType extends AbstractType
         $builder
             ->add('startAt', null, [
                 'widget' => 'single_text',
+                'label'=> 'Date de début',
             ])
             ->add('endAt', null, [
                 'widget' => 'single_text',
+                'label'=> 'Date de fin',
             ])
             ->add('service', EntityType::class, [
                 'class' => Service::class,

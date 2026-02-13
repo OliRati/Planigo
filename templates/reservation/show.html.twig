@@ -6,7 +6,7 @@
 {% block body %}
 	<div class="container" style="max-width: 80rem;">
 
-		<h1>Visualiser la réservation</h1>
+		<h1 class="mt-3">Visualiser la réservation</h1>
 
 		<table class="table">
 			<tbody>
@@ -39,7 +39,7 @@
 
 		<a class="btn btn-primary" href="{{ path('app_reservation_index') }}">Retour à la liste</a>
 
-		<a class="btn btn-secondary" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Modifier</a>
+		<a class="btn btn-secondary my-3" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Modifier</a>
 
 		{{ include('reservation/_delete_form.html.twig') }}
 	</div>
