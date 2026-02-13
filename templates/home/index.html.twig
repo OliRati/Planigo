@@ -3,6 +3,61 @@
 {% block title %}Planigo{% endblock %}
 
 {% block body %}
-<h1>Bienvenue sur Planigo</h1>
+<div class="container" style="max-width: 80rem;">
+    <h1>Bienvenue sur Planigo</h1>
     <p class="lead">Planigo vous facilite la gestion du temps.</p>
+    <p>Présentation des services disponibles</p>
+
+    <div class="container-fluid row gap-4">
+
+        <div class="card border-primary mb-3" style="max-width: 20rem;">
+            <div class="card-header">
+                <h4 class="card-title">Spa</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Profitez d’un moment de détente absolue avec notre service SPA exclusif, conçu pour votre bien-être
+                    et
+                    relaxation totale.</p>
+                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '1'}) }}">Voir les disponibilités</a>
+            </div>
+        </div>
+
+        <div class="card border-primary mb-3" style="max-width: 20rem;">
+            <div class="card-header">
+                <h4 class="card-title">Massage</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Offrez-vous un massage relaxant aux huiles essentielles, idéal pour relâcher les
+                    tensions et revitaliser profondément votre corps.</p>
+                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '2'}) }}">Voir les disponibilités</a>
+            </div>
+        </div>
+
+        <div class="card border-primary mb-3" style="max-width: 20rem;">
+            <div class="card-header">
+                <h4 class="card-title">Salle de sport</h4>
+            </div>
+            <div class="card-body">
+                Accédez à notre salle de sport moderne et entièrement équipée pour entretenir votre forme et booster
+                votre
+                énergie quotidienne.</p>
+                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '3'}) }}">Voir les disponibilités</a>
+            </div>
+        </div>
+
+        <div class="card border-primary mb-3" style="max-width: 20rem;">
+            <div class="card-header">
+                <h4 class="card-title">Espace détente</h4>
+            </div>
+            <div class="card-body">
+                Profitez d’un espace de détente privé et raffiné, idéal pour vous ressourcer en toute tranquillité et
+                intimité absolue.</p>
+                <a class="btn btn-primary" href="{{ path('app_planing', {'service': '1'}) }}">Voir les disponibilités</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}

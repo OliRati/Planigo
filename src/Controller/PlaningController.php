@@ -12,12 +12,26 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PlaningController extends AbstractController
 {
-    #[Route('/planing', name: 'app_planing')]
+    #[Route('/planing', name: 'app_planing_all')]
     public function index(ReservationRepository $reservationRepository): Response
     {
         $reservations = $reservationRepository->findByDay(new DateTimeImmutable());
 
         return $this->render('planing/index.html.twig', [
+            'service' => 'de tous les services',
+            'reservations' => $reservations
+        ]);
+    }
+
+    #[Route(path: "/planing/{service}", name: 'app_planing')]
+    public function plannings(ReservationRepository $reservationRepository): Response
+    {
+        $service = "du Spa";
+
+        $reservations = $reservationRepository->findByDay(new DateTimeImmutable());
+
+        return $this->render('planing/index.html.twig', [
+            "service" => $service,
             'reservations' => $reservations
         ]);
     }
