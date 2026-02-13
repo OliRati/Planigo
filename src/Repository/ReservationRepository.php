@@ -6,6 +6,7 @@ use DateTimeInterface;
 use App\Entity\Reservation;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PhpParser\Node\Scalar\MagicConst\Dir;
 
 /**
  * @extends ServiceEntityRepository<Reservation>
@@ -27,6 +28,37 @@ class ReservationRepository extends ServiceEntityRepository
             ->andWhere('r.endAt >= :start')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByUserByDay($user, DateTimeInterface $day): array
+    {
+        $start = (clone $day)->setTime(0, 0, 0);
+        $end = (clone $day)->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.startAt < :end')
+            ->andWhere('r.endAt >= :start')
+            ->andWhere('r.utilisateur = :utilisateur')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('utilisateur', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByServiceByDay($idService, DateTimeInterface $date): array
+    {
+        $start = (clone $date)->setTime(0,0,0);
+        $end = (clone $date)->setTime(23.59,59);
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.startAt < :end')
+            ->andWhere('r.endAt >= :start')
+            ->andWhere('r.service = :idservice')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter(':idservice', $idService)
             ->getQuery()
             ->getResult();
     }

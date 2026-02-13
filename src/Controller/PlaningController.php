@@ -10,29 +10,41 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class PlaningController extends AbstractController
 {
-    #[Route('/planing', name: 'app_planing_all')]
+    #[isGranted('ROLE_USER')]
+    #[Route('/planing', name: 'app_planing')]
+    public function userIndex(ReservationRepository $reservationRepository): Response
+    {
+        $reservations = $reservationRepository->findByUserByDay($this->getUser(), new DateTimeImmutable());
+
+        return $this->render('planing/index.html.twig', [
+            'service' => 'de mes reservations',
+            'reservations' => $reservations
+        ]);
+    }
+
+    #[Route(path: '/planing/{service}', name: 'app_planing_service')]
+    public function planingsByService(ReservationRepository $reservationRepository, Service $service): Response
+    {
+        $reservations = $reservationRepository->findByServiceByDay( $service->getId(), new DateTimeImmutable());
+
+        return $this->render('planing/service.html.twig', [
+            "service" => $service,
+            'reservations' => $reservations
+        ]);
+    }
+
+
+    #[Route('/admin/planing', name: 'app_planing_all')]
     public function index(ReservationRepository $reservationRepository): Response
     {
         $reservations = $reservationRepository->findByDay(new DateTimeImmutable());
 
         return $this->render('planing/index.html.twig', [
             'service' => 'de tous les services',
-            'reservations' => $reservations
-        ]);
-    }
-
-    #[Route(path: '/planing/{service}', name: 'app_planing')]
-    public function plannings(ReservationRepository $reservationRepository): Response
-    {
-        $service = "du Spa";
-
-        $reservations = $reservationRepository->findByDay(new DateTimeImmutable());
-
-        return $this->render('planing/index.html.twig', [
-            "service" => $service,
             'reservations' => $reservations
         ]);
     }

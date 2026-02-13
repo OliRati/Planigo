@@ -3,8 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Reservation;
+use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ReservationType extends AbstractType
@@ -18,6 +20,10 @@ class ReservationType extends AbstractType
             ->add('endAt', null, [
                 'widget' => 'single_text',
             ])
+            ->add('service', EntityType::class, [
+                'class' => Service::class,
+                'choice_label' => 'nom'
+            ] )
         ;
     }
 
