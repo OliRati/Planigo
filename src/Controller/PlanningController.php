@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Reservation;
 use App\Entity\Service;
 use App\Repository\ReservationRepository;
 use DateTimeImmutable;
@@ -12,44 +11,42 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-final class PlaningController extends AbstractController
+final class PlanningController extends AbstractController
 {
     #[isGranted('ROLE_USER')]
-    #[Route('/planing', name: 'app_planing')]
+    #[Route('/planning', name: 'app_planning')]
     public function userIndex(ReservationRepository $reservationRepository): Response
     {
         $reservations = $reservationRepository->findByUserByDay($this->getUser(), new DateTimeImmutable());
 
-        return $this->render('planing/index.html.twig', [
-            'service' => 'de mes reservations',
+        return $this->render('planning/user.html.twig', [
             'reservations' => $reservations
         ]);
     }
 
-    #[Route(path: '/planing/{service}', name: 'app_planing_service')]
-    public function planingsByService(ReservationRepository $reservationRepository, Service $service): Response
+    #[Route(path: '/planning/{service}', name: 'app_planning_service')]
+    public function planningsByService(ReservationRepository $reservationRepository, Service $service): Response
     {
         $reservations = $reservationRepository->findByServiceByDay( $service->getId(), new DateTimeImmutable());
 
-        return $this->render('planing/service.html.twig', [
+        return $this->render('planning/service.html.twig', [
             "service" => $service,
             'reservations' => $reservations
         ]);
     }
 
-
-    #[Route('/admin/planing', name: 'app_planing_all')]
+    #[Route('/admin/planning', name: 'app_planning_all')]
     public function index(ReservationRepository $reservationRepository): Response
     {
         $reservations = $reservationRepository->findByDay(new DateTimeImmutable());
 
-        return $this->render('planing/index.html.twig', [
+        return $this->render('planning/index.html.twig', [
             'service' => 'de tous les services',
             'reservations' => $reservations
         ]);
     }
 
-    #[Route(path: '/admin/setup', name: 'app_planing_setup')]
+    #[Route(path: '/admin/setup', name: 'app_planning_setup')]
     public function setup(EntityManagerInterface $em): Response
     {
         $defaults = [

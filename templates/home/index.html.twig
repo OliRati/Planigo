@@ -19,7 +19,7 @@
                 <p class="card-text">
                     {{ service.description }}
                 </p>
-                <a class="btn btn-primary" href="{{ path('app_planing_service', {'service': service.id }) }}">Voir les
+                <a class="btn btn-primary" href="{{ path('app_planning_service', {'service': service.id }) }}">Voir les
                     disponibilités</a>
             </div>
         </div>
@@ -33,7 +33,7 @@
                     Votre système ne contient aucun service. Veuillez en créer. Utilisez le bouton suivant pour
                     instancier des services par défaut.
                 </p>
-                <a class="btn btn-primary" href="{{ path('app_planing_setup') }}">Réinitialiser</a>
+                <a class="btn btn-primary" href="{{ path('app_planning_setup') }}">Réinitialiser</a>
             </div>
         </div>
         {% endfor %}

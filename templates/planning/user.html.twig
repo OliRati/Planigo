@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planigo planning
+{% endblock %}
+
+{% block body %}
+	<div class="container" style="max-width: 80rem;">
+
+		<h1>Planning journalier de mes réservations</h1>
+
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th scope="col">Id</th>
+					<th scope="col">Service</th>
+					<th scope="col">Début réservation</th>
+					<th scope="col">Fin réservation</th>
+					<th scope="col">actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for reservation in reservations %}
+					<tr class="table-active">
+						<th scope="row">{{ reservation.id }}</th>
+						<td>{{ reservation.service.nom }}</td>
+						<td>{{ reservation.startAt ? reservation.startAt|date('Y-m-d H:i:s') : '' }}</td>
+						<td>{{ reservation.endAt ? reservation.endAt|date('Y-m-d H:i:s') : '' }}</td>
+						<td>
+							<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">Afficher</a>
+							<a class="btn btn-primary btn-sm" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">Editer</a>
+							<a class="btn btn-warning btn-sm" href="{{ path('app_reservation_delete', {'id': reservation.id}) }}">Supprimer</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6">Aucune réservation</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<a class="btn btn-primary" href="{{ path('app_reservation_new')}}">Ajouter une réservation</a>
+	</div>
+{% endblock %}

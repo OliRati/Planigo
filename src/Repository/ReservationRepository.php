@@ -63,13 +63,15 @@ class ReservationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function isAvailable(DateTimeInterface $start, DateTimeInterface $end)
+    public function isAvailable($idService, DateTimeInterface $start, DateTimeInterface $end)
     {
         $result = $this->createQueryBuilder('r')
             ->andWhere('r.startAt < :end')
             ->andWhere('r.endAt >= :start')
+            ->andWhere('r.service = :service')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
+            ->setParameter('service', $idService)
             ->getQuery()
             ->getResult();
 

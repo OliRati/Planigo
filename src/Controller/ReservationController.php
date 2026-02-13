@@ -38,8 +38,9 @@ final class ReservationController extends AbstractController
             $reservation->setCreatedAt($currentDate);
 
             $user = $this->getUser();
-
             $reservation->setCustomerName($user->getNom() . ' ' . $user->getPrenom());
+
+            $reservation->setUtilisateur($user);
 
             // Check date consistency
             $agenda = new Agenda();
@@ -48,7 +49,7 @@ final class ReservationController extends AbstractController
             // Disponibilité du créneau horaire
             if (
                 empty($error)
-                && !$reservationRepository->isAvailable($reservation->getStartAt(), $reservation->getEndAt())
+                && !$reservationRepository->isAvailable($reservation->getService(), $reservation->getStartAt(), $reservation->getEndAt())
             ) {
                 $error = 'Le créneau horaire n\'est pas disponible';
             }
@@ -57,7 +58,10 @@ final class ReservationController extends AbstractController
                 $entityManager->persist($reservation);
                 $entityManager->flush();
 
-                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+                if ($this->isGranted("ROLE_ADMIN"))
+                    return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+
+                return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
             }
 
             if (!empty($error)) {

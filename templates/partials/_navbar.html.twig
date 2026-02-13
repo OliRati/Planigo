@@ -7,7 +7,7 @@
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item">
-					<a class="nav-link active" href="{{ path('app_planing_all') }}">Planing
+					<a class="nav-link active" href="{{ path('app_planning_all') }}">Planning
 						<span class="visually-hidden">(current)</span>
 					</a>
 				</li>
@@ -16,7 +16,7 @@
 					<div class="dropdown-menu">
 						{% if is_granted("IS_AUTHENTICATED_FULLY") %}
 							<a class="dropdown-item" href="#">Profile</a>
-							<a class="dropdown-item" href="{{ path('app_planing') }}">Mes réservations</a>
+							<a class="dropdown-item" href="{{ path('app_planning') }}">Mes réservations</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
 						{% else %}
