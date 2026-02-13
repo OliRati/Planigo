@@ -33,6 +33,25 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * Used to know if an Admin is defines
+     * @return bool
+     */
+    public function haveAdmin()
+    {
+        $admin = $this->createQueryBuilder('u')
+            ->where('JSON_CONTAINS(u.roles, :role) = 1')
+            ->setParameter('role', '"ROLE_ADMIN"')
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($admin) {
+            return true;
+        }
+
+        return false;
+    }
+
     //    /**
     //     * @return Utilisateur[] Returns an array of Utilisateur objects
     //     */
