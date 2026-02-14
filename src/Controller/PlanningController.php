@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Reservation;
 use App\Entity\Service;
 use App\Repository\ReservationRepository;
 use App\Service\Agenda;
@@ -46,7 +47,7 @@ final class PlanningController extends AbstractController
     }
 
     #[Route(path: '/planning/{service}/reserver', name: 'app_planning_reserver', methods: ['GET'])]
-    public function reserverCreneau(Request $request, ReservationRepository $reservationRepository, Service $service): Response
+    public function reserverCreneau(Request $request, EntityManagerInterface $em, ReservationRepository $reservationRepository, Service $service): Response
     {
         $today = new DateTimeImmutable();
 
@@ -83,6 +84,43 @@ final class PlanningController extends AbstractController
         }
 
         if (($endHour !== null) && ($startHour !== null) && ($confirm !== null)) {
+            $reservation = new Reservation();
+            $reservation->setCreatedAt($today);
+
+            $user = $this->getUser();
+            $reservation->setCustomerName($user->getNom() . ' ' . $user->getPrenom());
+
+            $reservation->setUtilisateur($user);
+
+            [$h, $m] = explode(':', $startHour);
+            $reservation->setStartAt((clone $today)->setTime((int)$h, (int)$m));
+
+            [$h, $m] = explode(':', $endHour);
+            $reservation->setEndAt((clone $today)->setTime((int)$h, (int)$m));
+
+            $reservation->setService($service);
+            
+            // Check date consistency
+            $agenda = new Agenda();
+            $error = $agenda->checkDateValidity($today, $reservation->getStartAt(), $reservation->getEndAt());
+
+            // Disponibilité du créneau horaire
+            if (
+                empty($error)
+                && !$reservationRepository->isAvailable($reservation->getService(), $reservation->getStartAt(), $reservation->getEndAt())
+            ) {
+                $error = 'Le créneau horaire n\'est pas disponible';
+            }
+
+            if (empty($error)) {
+                $em->persist($reservation);
+                $em->flush();
+
+                if ($this->isGranted("ROLE_ADMIN"))
+                    return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+
+                return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
+            }
             return $this->render('planning/reserver4.html.twig', [
                 'date' => $today,
                 "service" => $service,
