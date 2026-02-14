@@ -18,13 +18,16 @@
 					<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 						{% if is_granted("ROLE_ADMIN") %}
 							Administrateur
-						{% else %}
+						{% elseif is_granted("ROLE_USER") %}
 							Utilisateur
+						{% else %}
+							Visiteur
 						{% endif %}
 					</a>
 					<div class="dropdown-menu">
 						{% if is_granted("IS_AUTHENTICATED_FULLY") %}
 							{% if is_granted("ROLE_ADMIN") %}
+									<a class="dropdown-item" href="{{ path('app_service_index') }}">Services</a>
 									<a class="dropdown-item" href="{{ path('app_reservation_index') }}">Réservations</a>
 									<a class="dropdown-item" href="{{ path('app_planning_all') }}">Agenda</a>
 									<a class="dropdown-item" href="#">Utilisateurs</a>

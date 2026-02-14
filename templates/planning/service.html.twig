@@ -6,18 +6,25 @@
 {% block body %}
 	<div class="container" style="max-width: 80rem;">
 
-		<h1 class="mt-3">Planning journalier</h1>
-		<h2>{{ service.nom }}
-			du
-			{{ date|date('d-m-Y') }}</h2>
-		<p class="lead">{{ service.description }}</p>
+		<h1 class="mt-3">Planning journalier du
+			{{ date|date('d-m-Y') }}
+		</h1>
+
+		<div class="card border-primary mb-3">
+			<div class="card-header">
+				<h4 class="card-title">{{ service.nom }}</h4>
+			</div>
+			<div class="card-body">
+				<p class="card-text">{{ service.description }}</p>
+			</div>
+		</div>
 
 		<table class="table table-hover">
 			<thead>
 				<tr class="table-primary">
 					<th scope="col">Id</th>
 					<th scope="col">Nom du client</th>
-                    <th scope="col">Date</th>
+					<th scope="col">Date</th>
 					<th scope="col">Heures</th>
 				</tr>
 			</thead>
@@ -26,9 +33,10 @@
 					<tr class="table-dark">
 						<th scope="row">{{ reservation.id }}</th>
 						<td>{{ reservation.customerName }}</td>
-                        <td>{{ reservation.startAt|date('d-m-Y') }}
+						<td>{{ reservation.startAt|date('d-m-Y') }}</td>
 						<td>{{ reservation.startAt|date('H:i') }}
-						- {{ reservation.endAt|date('H:i') }}</td>
+							-
+							{{ reservation.endAt|date('H:i') }}</td>
 					</tr>
 				{% else %}
 					<tr>
@@ -52,7 +60,13 @@
 						<th scope="row">{{ freetab.start }}
 							-
 							{{ freetab.end }}</th>
-						<td><a class="btn btn-primary -btn-sm" href="#">Reserver dans ce créneau</a></td>
+						<td>
+							{% if is_granted("ROLE_USER") %}
+								<a class="btn btn-primary -btn-sm" href="#">Reserver dans ce créneau</a>
+								{% else %}
+								<a class="btn btn-primary -btn-sm" href="{{ path('app_login') }}">Connectez-vous pour réserver</a>
+							{% endif %}
+						</td>
 					</tr>
 
 					<p></p>

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Service
+{% endblock %}
+
+{% block body %}
+	<div class="container" style="max-width: 80rem;">
+		<h1 class="mt-3">Ajouter un service</h1>
+
+		{{ include('service/_form.html.twig') }}
+
+		<a class="btn btn-primary my-2" href="{{ path('app_service_index') }}">Retour à la liste des services</a>
+	</div>
+{% endblock %}

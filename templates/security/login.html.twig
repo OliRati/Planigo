@@ -12,9 +12,9 @@
 
 			{% if app.user %}
 				<div class="mb-3">
-					You are logged in as
+					Vous êtes identifié comme
 					{{ app.user.userIdentifier }},
-					<a href="{{ logout_path() }}">Logout</a>
+					<a href="{{ logout_path() }}">Déconnexion</a>
 				</div>
 			{% endif %}
 
@@ -36,9 +36,12 @@
 			            </div>
 			        #}
 
-			<button class="btn btn-lg btn-primary mt-3" type="submit">
-				Sign in
+			<button class="btn btn-lg btn-primary my-3" type="submit">
+				Valider
 			</button>
 		</form>
+		<h3>Vous n'avez pas déjà un compte</h3>
+		<a class="btn btn-secondary" href="{{ path('app_register') }}">Inscrivez-vous ici</a>
+		</p>
 	</div>
 {% endblock %}
