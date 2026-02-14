@@ -3,11 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Service;
-use App\Service\Agenda;
 use App\Repository\ReservationRepository;
+use App\Service\Agenda;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -20,7 +21,7 @@ final class PlanningController extends AbstractController
     {
         $today = new DateTimeImmutable();
         $reservations = $reservationRepository->findByUserByDay($this->getUser(), $today);
-        
+
         return $this->render('planning/user.html.twig', [
             'date' => $today,
             'reservations' => $reservations
@@ -31,7 +32,7 @@ final class PlanningController extends AbstractController
     public function planningsByService(ReservationRepository $reservationRepository, Service $service): Response
     {
         $today = new DateTimeImmutable();
-        $reservations = $reservationRepository->findByServiceByDay( $service->getId(), $today);
+        $reservations = $reservationRepository->findByServiceByDay($service->getId(), $today);
 
         $agenda = new Agenda();
         $freetabs = $agenda->freeSpace($reservations);
@@ -44,6 +45,67 @@ final class PlanningController extends AbstractController
         ]);
     }
 
+    #[Route(path: '/planning/{service}/reserver', name: 'app_planning_reserver', methods: ['GET'])]
+    public function reserverCreneau(Request $request, ReservationRepository $reservationRepository, Service $service): Response
+    {
+        $today = new DateTimeImmutable();
+
+        $startHour = $request->query->get('start_hour');
+        $endHour = $request->query->get('end_hour');
+        $confirm = $request->query->get('confirm');
+
+        if (($endHour === null) && ($startHour !== null)) {
+            return $this->render('planning/reserver2.html.twig', [
+                'date' => $today,
+                "service" => $service,
+                "startHour" => $startHour,
+                'hours' => [$startHour],
+            ]);
+        }
+
+        if (($endHour !== null) && ($startHour !== null) && ($confirm !== null)) {
+            return $this->render('planning/reserver4.html.twig', [
+                'date' => $today,
+                "service" => $service,
+                "startHour" => $startHour,
+                'endHour' => $endHour
+            ]);
+        }
+
+        if (($endHour !== null) && ($startHour !== null)) {
+            return $this->render('planning/reserver3.html.twig', [
+                'date' => $today,
+                "service" => $service,
+                "startHour" => $startHour,
+                'endHour' => $endHour
+            ]);
+        }
+
+        $start = $request->query->get('start');
+        $end = $request->query->get('end');
+
+        [$hDebut, $mDebut] = explode(':', $start);
+        $minutesDebut = $hDebut * 60 + $mDebut;
+
+        [$hFin, $mFin] = explode(':', $end);
+        $minutesFin = $hFin * 60 + $mFin;
+
+        $tabStartTime = [];
+
+        while ($minutesDebut < $minutesFin) {
+            $tabStartTime[] = str_pad((int) ($minutesDebut / 60), 2, '0', STR_PAD_LEFT)
+                . ':' .
+                str_pad($minutesDebut % 60, 2, '0', STR_PAD_LEFT);
+            $minutesDebut += 30;
+        }
+
+        return $this->render('planning/reserver.html.twig', [
+            'date' => $today,
+            "service" => $service,
+            'hours' => $tabStartTime,
+        ]);
+    }
+
     #[isGranted('ROLE_ADMIN')]
     #[Route('/admin/planning', name: 'app_planning_all')]
     public function index(ReservationRepository $reservationRepository): Response
@@ -52,7 +114,7 @@ final class PlanningController extends AbstractController
         $reservations = $reservationRepository->findByDay($today);
 
         return $this->render('planning/index.html.twig', [
-            'date'=> $today,
+            'date' => $today,
             'service' => 'de tous les services',
             'reservations' => $reservations
         ]);

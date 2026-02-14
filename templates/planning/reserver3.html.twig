@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planigo planning
+{% endblock %}
+
+{% block body %}
+	<div class="container" style="max-width: 80rem;">
+
+		<h1 class="mt-3">Réservation pour le
+			{{ date|date('d-m-Y') }}
+		</h1>
+
+		{% include 'planning/_service.html.twig' %}
+
+		<h1 class="mt-3">Heure de début : {{ startHour }}</h1>
+        <h1 class="mt-3">Heure de fin : {{ endHour }}</h1>
+
+		<h1 class="mt-3">Confirmez vous ?</h1>
+		<form>
+            <input type="hidden" name="start_hour" value="{{ startHour }}">
+            <input type="hidden" name="end_hour" value="{{ endHour }}">
+            <input type="hidden" name="confirm" value="confirm">
+			<button class="btn btn-primary my-3" type="submit">Confirmer</button>
+		</form>
+	</div>
+{% endblock %}

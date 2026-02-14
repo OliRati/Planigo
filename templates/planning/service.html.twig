@@ -10,14 +10,7 @@
 			{{ date|date('d-m-Y') }}
 		</h1>
 
-		<div class="card border-primary mb-3">
-			<div class="card-header">
-				<h4 class="card-title">{{ service.nom }}</h4>
-			</div>
-			<div class="card-body">
-				<p class="card-text">{{ service.description }}</p>
-			</div>
-		</div>
+		{% include 'planning/_service.html.twig' %}
 
 		<table class="table table-hover">
 			<thead>
@@ -62,8 +55,8 @@
 							{{ freetab.end }}</th>
 						<td>
 							{% if is_granted("ROLE_USER") %}
-								<a class="btn btn-primary -btn-sm" href="#">Reserver dans ce créneau</a>
-								{% else %}
+								<a class="btn btn-primary -btn-sm" href="{{ path('app_planning_reserver', { 'service': service.id, 'start': freetab.start, 'end': freetab.end }) }}">Reserver dans ce créneau</a>
+							{% else %}
 								<a class="btn btn-primary -btn-sm" href="{{ path('app_login') }}">Connectez-vous pour réserver</a>
 							{% endif %}
 						</td>
