@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Utilisateur
+{% endblock %}
+
+{% block body %}
+	<div class="container" style="max-width: 80rem;">
+
+		<h1>Edit Utilisateur</h1>
+
+		{{ include('utilisateur/_form.html.twig', {'button_label': 'Update'}) }}
+
+		<a  class="btn btn-primary me-2 my-3" href="{{ path('app_utilisateur_index') }}">Retour à la liste des utilisateurs</a>
+
+		{{ include('utilisateur/_delete_form.html.twig') }}
+	</div>
+{% endblock %}
