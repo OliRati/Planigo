@@ -64,6 +64,15 @@ class Agenda
         return false;
     }
 
+    private function isTimeEqual($time1, $time2)
+    {
+        [$h1, $m1] = explode(':', $time1);
+
+        [$h2, $m2] = explode(':', $time2);
+
+        return (int)$h1 === (int)$h2 && (int)$m1 === (int)$m2;
+    }
+
     public function freeSpace(array $reservations)
     {
         $startTime = $this::$heureOuverture;
@@ -72,14 +81,16 @@ class Agenda
         $spaces = [];
 
         foreach ($reservations as $reservation) {
-            $spaces[] = [
-                'start' => $startTime,
-                'end' => $reservation->getStartAt()->format('H:i'),
-            ];
+            if (!$this->isTimeEqual($startTime, $reservation->getStartAt()->format('H:i'))) {
+                $spaces[] = [
+                    'start' => $startTime,
+                    'end' => $reservation->getStartAt()->format('H:i'),
+                ];
+            }
             $startTime = $reservation->getEndAt()->format('H:i');
         }
 
-        if ($startTime != $endTime) {
+        if (!$this->isTimeEqual($startTime, $this::$heureFermeture)) {
             $spaces[] = [
                 'start' => $startTime,
                 'end' => $this::$heureFermeture
