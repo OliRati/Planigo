@@ -99,7 +99,7 @@ final class PlanningController extends AbstractController
             $reservation->setEndAt((clone $today)->setTime((int)$h, (int)$m));
 
             $reservation->setService($service);
-            
+
             // Check date consistency
             $agenda = new Agenda();
             $error = $agenda->checkDateValidity($today, $reservation->getStartAt(), $reservation->getEndAt());
@@ -121,11 +121,13 @@ final class PlanningController extends AbstractController
 
                 return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
             }
+            
             return $this->render('planning/reserver4.html.twig', [
                 'date' => $today,
                 "service" => $service,
                 "startHour" => $startHour,
-                'endHour' => $endHour
+                'endHour' => $endHour,
+                'error' => $error
             ]);
         }
 

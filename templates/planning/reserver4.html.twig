@@ -12,7 +12,8 @@
 
 		{% include 'planning/_service.html.twig' %}
 
-		<h1>Confirmation de votre réservation pour :</h1>
+		<h1>Votre réservation ne peut pas être honorée :</h1>
+        <h3 class="text-warning">{{ error }}</h3>
 		<h1 class="mt-3">Heure de début :
 			{{ startHour }}</h1>
 		<h1 class="mt-3">Heure de fin :
