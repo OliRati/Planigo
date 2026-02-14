@@ -55,11 +55,30 @@ final class PlanningController extends AbstractController
         $confirm = $request->query->get('confirm');
 
         if (($endHour === null) && ($startHour !== null)) {
+            $start = $startHour;
+            $end = $request->query->get('endTime');
+
+            [$hDebut, $mDebut] = explode(':', $start);
+            $minutesDebut = $hDebut * 60 + $mDebut;
+
+            [$hFin, $mFin] = explode(':', $end);
+            $minutesFin = $hFin * 60 + $mFin;
+
+            $tabEndTime = [];
+
+            $curMinutes = $minutesDebut;
+            while ($curMinutes < min($minutesFin, $minutesDebut + 4 * 60)) {
+                $curMinutes += 30;
+                $tabEndTime[] = str_pad((int) ($curMinutes / 60), 2, '0', STR_PAD_LEFT)
+                    . ':' .
+                    str_pad($curMinutes % 60, 2, '0', STR_PAD_LEFT);
+            }
+
             return $this->render('planning/reserver2.html.twig', [
                 'date' => $today,
                 "service" => $service,
                 "startHour" => $startHour,
-                'hours' => [$startHour],
+                'hours' => $tabEndTime,
             ]);
         }
 
@@ -101,8 +120,10 @@ final class PlanningController extends AbstractController
 
         return $this->render('planning/reserver.html.twig', [
             'date' => $today,
-            "service" => $service,
+            'service' => $service,
             'hours' => $tabStartTime,
+            'startTime' => $start,
+            'endTime' => $end
         ]);
     }
 
