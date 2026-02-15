@@ -82,7 +82,7 @@ class Agenda
         if ($timestampEnd > $timestampFermeture)
             return 'Les réservations ne peuvent dépasser la fermeture à ' . Agenda::$heureFermeture . ' heures';
 
-        return false;
+        return "";
     }
 
     public function checkUserDisponibility($userReservations, $timeStart, $timeEnd)
@@ -93,7 +93,6 @@ class Agenda
         if ($minutesStart > $minutesEnd)
             return "L'heure de début de réservation est inférieure à l'heure de fin";
 
-
         foreach ($userReservations as $reservation) {
             $reservedStart = $this->convertTimeToMinutes($reservation->getStartAt()->format('H:i'));
             $reservedEnd = $this->convertTimeToMinutes($reservation->getEndAt()->format('H:i'));
@@ -101,6 +100,7 @@ class Agenda
             if (
                 (($minutesEnd > $reservedStart) && ($minutesEnd < $reservedEnd))
                 || (($minutesStart > $reservedStart) && ($minutesStart < $reservedEnd))
+                || (($minutesStart == $reservedStart) && ($minutesEnd == $reservedEnd))
             ) {
                 return "Vous avez déjà une reservation dans ce créneau avec " . $reservation->getService()->getNom()
                 . " de " . $this->convertMinutesToTime($reservedStart)
@@ -109,7 +109,7 @@ class Agenda
 
         }
 
-        return false;
+        return "";
     }
 
     public function freeSpace(array $reservations)

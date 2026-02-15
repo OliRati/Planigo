@@ -44,10 +44,9 @@ final class ReservationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $today = new DateTimeImmutable();
             $day = $reservation->getStartAt();
 
-            $reservation->setCreatedAt($today);
+            $reservation->setCreatedAt(new DateTimeImmutable());
 
             $user = $this->getUser();
             $reservation->setCustomerName($user->getNom() . ' ' . $user->getPrenom());
@@ -118,14 +117,13 @@ final class ReservationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $today = new DateTimeImmutable();
             $day = $reservation->getStartAt();
 
             $user = $this->getUser();
 
             // Check date consistency
             $agenda = new Agenda();
-            $error = $agenda->checkDateValidity($today, $reservation->getStartAt(), $reservation->getEndAt());
+            $error = $agenda->checkDateValidity($day, $reservation->getStartAt(), $reservation->getEndAt());
 
             if (empty($error)) {
                 $userReservations = $reservationRepository->findByUserByDay($user, $day);

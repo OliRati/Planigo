@@ -50,6 +50,7 @@ final class PlanningController extends AbstractController
     public function reserverCreneau(Request $request, EntityManagerInterface $em, ReservationRepository $reservationRepository, Service $service): Response
     {
         $today = new DateTimeImmutable();
+        $day = $today;
 
         $startHour = $request->query->get('start_hour');
         $endHour = $request->query->get('end_hour');
@@ -76,7 +77,7 @@ final class PlanningController extends AbstractController
             }
 
             return $this->render('planning/reserver2.html.twig', [
-                'date' => $today,
+                'date' => $day,
                 "service" => $service,
                 "startHour" => $startHour,
                 'hours' => $tabEndTime,
@@ -93,21 +94,20 @@ final class PlanningController extends AbstractController
             $reservation->setUtilisateur($user);
 
             [$h, $m] = explode(':', $startHour);
-            $reservation->setStartAt((clone $today)->setTime((int) $h, (int) $m));
+            $reservation->setStartAt((clone $day)->setTime((int) $h, (int) $m));
 
             [$h, $m] = explode(':', $endHour);
-            $reservation->setEndAt((clone $today)->setTime((int) $h, (int) $m));
+            $reservation->setEndAt((clone $day)->setTime((int) $h, (int) $m));
 
             $reservation->setService($service);
 
             // Check date consistency
             $agenda = new Agenda();
-            $error = $agenda->checkDateValidity($today, $reservation->getStartAt(), $reservation->getEndAt());
+            $error = $agenda->checkDateValidity($day, $reservation->getStartAt(), $reservation->getEndAt());
 
             if (empty($error)) {
-                $today = new DateTimeImmutable();
-                $userReservations = $reservationRepository->findByUserByDay($user,  $today);
-
+                $userReservations = $reservationRepository->findByUserByDay($user,  $day);
+                
                 $error = $agenda->checkUserDisponibility($userReservations, $startHour, $endHour);
             }
 
@@ -130,7 +130,7 @@ final class PlanningController extends AbstractController
             }
 
             return $this->render('planning/reserver4.html.twig', [
-                'date' => $today,
+                'date' => $day,
                 "service" => $service,
                 "startHour" => $startHour,
                 'endHour' => $endHour,
@@ -140,7 +140,7 @@ final class PlanningController extends AbstractController
 
         if (($endHour !== null) && ($startHour !== null)) {
             return $this->render('planning/reserver3.html.twig', [
-                'date' => $today,
+                'date' => $day,
                 "service" => $service,
                 "startHour" => $startHour,
                 'endHour' => $endHour
