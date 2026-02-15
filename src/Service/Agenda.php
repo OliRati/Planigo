@@ -7,11 +7,31 @@ use DateTimeImmutable;
 
 class Agenda
 {
-    // Durées en minutes
     private static string $heureOuverture = '8:00';
     private static string $heureFermeture = '19:00';
     private static string $reservationMaximale = '4:00';
     private static string $reservationMinimale = '0:30';
+    private static string $reservationPas = '0:30';
+    private static string $workingDays = "lundi,mardi,mercredi,jeudi,vendredi,samedi";
+
+    private function convertTimeToMinutes($time)
+    {
+        [$h, $m] = explode(':', $time);
+        return (int) $h * 60 + (int) $m;
+    }
+
+    private function convertMinutesToTime($ticks)
+    {
+        return intdiv($ticks, 60) . ':' . ($ticks % 60);
+    }
+
+    private function isTimeEqual($time1, $time2)
+    {
+        $minutes1 = $this->convertTimeToMinutes($time1);
+        $minutes2 = $this->convertTimeToMinutes($time2);
+
+        return $minutes1 === $minutes2;
+    }
 
     public function getDisponibilitéForDay($date)
     {
@@ -64,13 +84,29 @@ class Agenda
         return false;
     }
 
-    private function isTimeEqual($time1, $time2)
+    public function checkUserDisponibility($userReservations, $timeStart, $timeEnd)
     {
-        [$h1, $m1] = explode(':', $time1);
+        $minutesStart = $this->convertTimeToMinutes($timeStart);
+        $minutesEnd = $this->convertTimeToMinutes($timeEnd);
 
-        [$h2, $m2] = explode(':', $time2);
+        if ($minutesStart > $minutesEnd)
+            return "L'heure de début de réservation est inférieure à l'heure de fin";
 
-        return (int)$h1 === (int)$h2 && (int)$m1 === (int)$m2;
+
+        foreach ($userReservations as $reservation) {
+            $reservedStart = $this->convertTimeToMinutes($reservation->getStartAt()->format('h:m'));
+            $reservedEnd = $this->convertTimeToMinutes($reservation->getEndAt()->format('h:m'));
+
+            if (
+                (($minutesEnd > $reservedStart) && ($minutesEnd < $reservedEnd))
+                || (($minutesStart > $reservedStart) && ($minutesStart < $reservedEnd))
+            ) {
+                return "Vous avez déjà une reservation dans ce créneau avec " . $reservation->getService()->getNom() ;
+            }
+
+        }
+
+        return false;
     }
 
     public function freeSpace(array $reservations)

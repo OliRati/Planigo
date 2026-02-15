@@ -93,16 +93,23 @@ final class PlanningController extends AbstractController
             $reservation->setUtilisateur($user);
 
             [$h, $m] = explode(':', $startHour);
-            $reservation->setStartAt((clone $today)->setTime((int)$h, (int)$m));
+            $reservation->setStartAt((clone $today)->setTime((int) $h, (int) $m));
 
             [$h, $m] = explode(':', $endHour);
-            $reservation->setEndAt((clone $today)->setTime((int)$h, (int)$m));
+            $reservation->setEndAt((clone $today)->setTime((int) $h, (int) $m));
 
             $reservation->setService($service);
 
             // Check date consistency
             $agenda = new Agenda();
             $error = $agenda->checkDateValidity($today, $reservation->getStartAt(), $reservation->getEndAt());
+
+            if (empty($error)) {
+                $today = new DateTimeImmutable();
+                $userReservations = $reservationRepository->findByUserByDay($user,  $today);
+
+                $error = $agenda->checkUserDisponibility($userReservations, $startHour, $endHour);
+            }
 
             // Disponibilité du créneau horaire
             if (
@@ -121,7 +128,7 @@ final class PlanningController extends AbstractController
 
                 return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
             }
-            
+
             return $this->render('planning/reserver4.html.twig', [
                 'date' => $today,
                 "service" => $service,
