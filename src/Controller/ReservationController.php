@@ -44,9 +44,10 @@ final class ReservationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $currentDate = new DateTimeImmutable();
+            $today = new DateTimeImmutable();
+            $day = $reservation->getStartAt();
 
-            $reservation->setCreatedAt($currentDate);
+            $reservation->setCreatedAt($today);
 
             $user = $this->getUser();
             $reservation->setCustomerName($user->getNom() . ' ' . $user->getPrenom());
@@ -55,7 +56,16 @@ final class ReservationController extends AbstractController
 
             // Check date consistency
             $agenda = new Agenda();
-            $error = $agenda->checkDateValidity($currentDate, $reservation->getStartAt(), $reservation->getEndAt());
+            $error = $agenda->checkDateValidity($day, $reservation->getStartAt(), $reservation->getEndAt());
+
+            if (empty($error)) {
+                $userReservations = $reservationRepository->findByUserByDay($user, $day);
+
+                $startHour = $reservation->getStartAt()->format('H:i');
+                $endHour = $reservation->getEndAt()->format('H:i');
+
+                $error = $agenda->checkUserDisponibility($userReservations, $startHour, $endHour);
+            }
 
             // Disponibilité du créneau horaire
             if (
@@ -68,11 +78,6 @@ final class ReservationController extends AbstractController
             if (empty($error)) {
                 $entityManager->persist($reservation);
                 $entityManager->flush();
-
-                if ($this->isGranted("ROLE_ADMIN"))
-                    return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
-
-                return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
             }
 
             if (!empty($error)) {
@@ -82,6 +87,11 @@ final class ReservationController extends AbstractController
                     'error' => $error
                 ], new Response('', 422));
             }
+
+            if ($this->isGranted("ROLE_ADMIN"))
+                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+
+            return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reservation/new.html.twig', [
@@ -108,16 +118,28 @@ final class ReservationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $currentDate = new DateTimeImmutable();
+            $today = new DateTimeImmutable();
+            $day = $reservation->getStartAt();
+
+            $user = $this->getUser();
 
             // Check date consistency
             $agenda = new Agenda();
-            $error = $agenda->checkDateValidity($currentDate, $reservation->getStartAt(), $reservation->getEndAt());
+            $error = $agenda->checkDateValidity($today, $reservation->getStartAt(), $reservation->getEndAt());
+
+            if (empty($error)) {
+                $userReservations = $reservationRepository->findByUserByDay($user, $day);
+
+                $startHour = $reservation->getStartAt()->format('H:i');
+                $endHour = $reservation->getEndAt()->format('H:i');
+
+                $error = $agenda->checkUserDisponibility($userReservations, $startHour, $endHour);
+            }
 
             // Disponibilité du créneau horaire
             if (
                 empty($error)
-                && !$reservationRepository->isAvailable($reservation->getStartAt(), $reservation->getEndAt())
+                && !$reservationRepository->isAvailable($reservation->getService(), $reservation->getStartAt(), $reservation->getEndAt())
             ) {
                 $error = 'Le créneau horaire n\'est pas disponible';
             }
@@ -125,8 +147,6 @@ final class ReservationController extends AbstractController
             if (empty($error)) {
                 $entityManager->persist($reservation);
                 $entityManager->flush();
-
-                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
             }
 
             if (!empty($error)) {
@@ -137,9 +157,10 @@ final class ReservationController extends AbstractController
                 ], new Response('', 422));
             }
 
-            $entityManager->flush();
+            if ($this->isGranted("ROLE_ADMIN"))
+                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
 
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_planning', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reservation/edit.html.twig', [

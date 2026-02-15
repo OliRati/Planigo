@@ -20,9 +20,10 @@ class Agenda
         return (int) $h * 60 + (int) $m;
     }
 
-    private function convertMinutesToTime($ticks)
+    private function convertMinutesToTime($minutes)
     {
-        return intdiv($ticks, 60) . ':' . ($ticks % 60);
+        return intdiv($minutes, 60) . ':'
+          . str_pad((string)($minutes % 60), 2, '0', STR_PAD_LEFT);
     }
 
     private function isTimeEqual($time1, $time2)
@@ -94,14 +95,16 @@ class Agenda
 
 
         foreach ($userReservations as $reservation) {
-            $reservedStart = $this->convertTimeToMinutes($reservation->getStartAt()->format('h:m'));
-            $reservedEnd = $this->convertTimeToMinutes($reservation->getEndAt()->format('h:m'));
+            $reservedStart = $this->convertTimeToMinutes($reservation->getStartAt()->format('H:i'));
+            $reservedEnd = $this->convertTimeToMinutes($reservation->getEndAt()->format('H:i'));
 
             if (
                 (($minutesEnd > $reservedStart) && ($minutesEnd < $reservedEnd))
                 || (($minutesStart > $reservedStart) && ($minutesStart < $reservedEnd))
             ) {
-                return "Vous avez déjà une reservation dans ce créneau avec " . $reservation->getService()->getNom() ;
+                return "Vous avez déjà une reservation dans ce créneau avec " . $reservation->getService()->getNom()
+                . " de " . $this->convertMinutesToTime($reservedStart)
+                ."  à " . $this->convertMinutesToTime($reservedEnd);
             }
 
         }
