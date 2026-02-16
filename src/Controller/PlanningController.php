@@ -188,7 +188,7 @@ final class PlanningController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/admin/setup', name: 'app_planning_setup')]
+    #[Route(path: '/setup', name: 'app_planning_setup')]
     public function setup(EntityManagerInterface $em): Response
     {
         $defaults = [
